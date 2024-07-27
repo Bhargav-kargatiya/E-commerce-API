@@ -42,7 +42,11 @@ export const loginUserCtrl = asyncHandler(async (req, res) => {
 
     const { email, password } = req.body;
     const userFound = await User.findOne({ email });
-
+    if (!email || !password) {
+        const error = new Error("Please add email and password");
+        error.statusCode = 400; // Set the custom status code
+        throw error; // Throw the error with the attached status code
+    }
     if (userFound && (await bcrypt.compare(password, userFound?.password))) {
         res.json({
             status: "success",
