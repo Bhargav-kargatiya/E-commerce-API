@@ -1,5 +1,8 @@
+import mongoose from 'mongoose';
 import asynchandler from "express-async-handler";
 import Product from "../model/Product.js";
+import Category from '../model/Category.js';
+
 //@desc  create  new product
 //@route POST /api/v1/products
 //@access private/admin
@@ -8,16 +11,23 @@ export const createProductCtrl = asynchandler(async (req, res) => {
     const { name, description, category, sizes, colors
         , user, price, totalQty, brand
     } = req.body;
+    const lowerCaseName = name.toLowerCase();
+    const lowerCaseCategory = category.toLowerCase();
     //Product exists
-    const productExists = await Product.findOne({ name });
+    const productExists = await Product.findOne({ name: lowerCaseName });
     if (productExists) {
         throw new Error("Product Already Exists");
     }
+    //find the category
+    const categoryFound = await Category.findOne({ name: lowerCaseCategory })
+    if (!categoryFound) {
+        throw new Error("Category Not Found Please Create Category First Or Check Category Name");
+    }
     //create product
     const product = await Product.create({
-        name,
+        name: lowerCaseName,
         description,
-        category,
+        category: lowerCaseCategory,
         sizes,
         colors,
         user: req.userAuthId,
@@ -27,7 +37,9 @@ export const createProductCtrl = asynchandler(async (req, res) => {
 
     });
     //push the product into category
-
+    categoryFound.products.push(product._id);
+    //save category
+    await categoryFound.save();
     res.json({
         status: "success",
         message: "Product created successfully",
@@ -120,5 +132,70 @@ export const getProductsCtrl = asynchandler(async (req, res) => {
         pagination,
         message: "Products fetched successfully",
         products
+    });
+})
+
+//@desc  Get single product
+//@route POST /api/v1/products/:id
+//@access public
+
+export const getSingleProductCtrl = asynchandler(async (req, res) => {
+    // console.log(req.params.id);
+    if (!mongoose.isValidObjectId(req.params.id)) {
+        res.status(400);
+        throw new Error("Invalid product ID");
+    }
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+        throw new Error("Product not found");
+    }
+    res.json({
+        status: "success",
+        message: "Product fetched successfully",
+        product
+    });
+})
+
+//@desc  Update  product
+//@route POST /api/v1/products/:id/update
+//@access Private Admin
+
+export const updateProductCtrl = asynchandler(async (req, res) => {
+    const { name, description, category, sizes, colors
+        , user, price, totalQty, brand
+    } = req.body;
+    //update Product
+    const lowerCaseName = name.toLowerCase();
+    const lowerCaseCategory = category.toLowerCase();
+    const product = await Product.findByIdAndUpdate(req.params.id, {
+        lowerCaseName,
+        description,
+        lowerCaseCategory,
+        sizes,
+        colors,
+        user,
+        price,
+        totalQty,
+        brand
+    }, {
+        new: true,
+    });
+    res.json({
+        status: "success",
+        message: "Product updated successfully",
+        product
+    });
+})
+
+
+//@desc  Delete  product
+//@route DELETE /api/v1/products/:id/update
+//@access Private Admin
+
+export const deleteProductCtrl = asynchandler(async (req, res) => {
+    await Product.findByIdAndDelete(req.params.id);
+    res.json({
+        status: "success",
+        message: "Product deleted successfully",
     });
 })
