@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import asynchandler from "express-async-handler";
 import Product from "../model/Product.js";
 import Category from '../model/Category.js';
-
+import Brand from '../model/Brand.js';
 //@desc  create  new product
 //@route POST /api/v1/products
 //@access private/admin
@@ -13,6 +13,7 @@ export const createProductCtrl = asynchandler(async (req, res) => {
     } = req.body;
     const lowerCaseName = name.toLowerCase();
     const lowerCaseCategory = category.toLowerCase();
+    const lowerCaseBrand = brand.toLowerCase();
     //Product exists
     const productExists = await Product.findOne({ name: lowerCaseName });
     if (productExists) {
@@ -23,6 +24,13 @@ export const createProductCtrl = asynchandler(async (req, res) => {
     if (!categoryFound) {
         throw new Error("Category Not Found Please Create Category First Or Check Category Name");
     }
+
+    //find the brand
+    const brandFound = await Brand.findOne({ name: lowerCaseBrand });
+    if (!brandFound) {
+        throw new Error("Brand Not Found Please Create Brand First Or Check Brand Name");
+    }
+
     //create product
     const product = await Product.create({
         name: lowerCaseName,
@@ -33,13 +41,19 @@ export const createProductCtrl = asynchandler(async (req, res) => {
         user: req.userAuthId,
         price,
         totalQty,
-        brand
+        brand: lowerCaseBrand
 
     });
     //push the product into category
     categoryFound.products.push(product._id);
+
+    //push the product into brand
+    brandFound.products.push(product._id);
+
     //save category
     await categoryFound.save();
+    //save brand
+    await brandFound.save();
     res.json({
         status: "success",
         message: "Product created successfully",

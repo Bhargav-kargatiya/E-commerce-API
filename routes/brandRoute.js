@@ -5,11 +5,11 @@ import { createBrandCtrl, deleteBrandCtrl, getAllBrandCtrl, getSingleBrandCtrl, 
 
 const brandsRoutes = express.Router();
 isLoggedin
-productRoutes.post('/', isLoggedin, createBrandCtrl);
-productRoutes.get('/', getAllBrandCtrl);
-productRoutes.get('/:id', getSingleBrandCtrl);
-productRoutes.put('/:id', isLoggedin, updateBrandCtrl);
-productRoutes.delete('/:id', isLoggedin, deleteBrandCtrl);
+brandsRoutes.post('/', isLoggedin, createBrandCtrl);
+brandsRoutes.get('/', getAllBrandCtrl);
+brandsRoutes.get('/:id', getSingleBrandCtrl);
+brandsRoutes.put('/:id', isLoggedin, updateBrandCtrl);
+brandsRoutes.delete('/:id', isLoggedin, deleteBrandCtrl);
 
 
 export default brandsRoutes   

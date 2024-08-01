@@ -58,12 +58,10 @@ export const updateBrandCtrl = asyncHandler(async (req, res) => {
     const { name } = req.body;
     const lowerCaseName = name.toLowerCase();
     //update Product
-    const brand = await Brand.findByIdAndUpdate(req.params.id, {
-        lowerCaseName,
-
-    }, {
-        new: true,
-    });
+    const brand = await Brand.findByIdAndUpdate(req.params.id, { name: lowerCaseName },
+        {
+            new: true,
+        });
     res.json({
         status: "success",
         message: "Brand updated successfully",
