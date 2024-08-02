@@ -6,6 +6,7 @@ import categoriesRouter from "../routes/categoriesRouter.js";
 import { globalErrHandler, notFound } from "../middlewares/globalErrHandler.js";
 import productRoutes from "../routes/productRoute.js";
 import brandsRoutes from "../routes/brandRoute.js";
+import colorsRoutes from "../routes/colorRoute copy.js";
 dotenv.config();
 
 //db connect
@@ -19,6 +20,7 @@ app.use('/api/v1/users', userRoutes)
 app.use('/api/v1/product', productRoutes)
 app.use('/api/v1/categories', categoriesRouter)
 app.use('/api/v1/brands', brandsRoutes)
+app.use('/api/v1/colors', colorsRoutes)
 
 //global error handler
 app.use(notFound)
