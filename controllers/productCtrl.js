@@ -68,7 +68,7 @@ export const createProductCtrl = asynchandler(async (req, res) => {
 
 export const getProductsCtrl = asynchandler(async (req, res) => {
     //Query
-    let productQuery = Product.find();
+    let productQuery = Product.find().populate("reviews");
     //filter by name
     if (req.query?.name) {
         productQuery = productQuery.find({
@@ -159,7 +159,7 @@ export const getSingleProductCtrl = asynchandler(async (req, res) => {
         res.status(400);
         throw new Error("Invalid product ID");
     }
-    const product = await Product.findById(req.params.id);
+    const product = await Product.findById(req.params.id).populate("reviews");
     if (!product) {
         throw new Error("Product not found");
     }
