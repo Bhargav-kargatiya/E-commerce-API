@@ -8,6 +8,7 @@ import productRoutes from "../routes/productRoute.js";
 import brandsRoutes from "../routes/brandRoute.js";
 import colorsRoutes from "../routes/colorRoute copy.js";
 import reviewsRoutes from "../routes/reviewRoute.js";
+import orderRoutes from "../routes/orderRoute.js";
 dotenv.config();
 
 //db connect
@@ -23,6 +24,7 @@ app.use('/api/v1/categories', categoriesRouter)
 app.use('/api/v1/brands', brandsRoutes)
 app.use('/api/v1/colors', colorsRoutes)
 app.use('/api/v1/reviews', reviewsRoutes)
+app.use('/api/v1/orders', orderRoutes)
 
 //global error handler
 app.use(notFound)
