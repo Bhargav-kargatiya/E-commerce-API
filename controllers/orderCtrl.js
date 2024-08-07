@@ -70,17 +70,54 @@ export const createOrderCtrl = asyncHandler(async (req, res) => {
     })
     const session = await stripe.checkout.sessions.create({
         line_items: convertedOrder,
+        metadata: {
+            orderId: JSON.stringify(order?._id),
+        },
         mode: "payment",
         success_url: "http://localhost:3000/success",
         cancel_url: "http://localhost:3000/cancel",
     })
     res.send({ url: session.url });
     //Implement Payment webhook
-
-    //Update the  user order
-    res.send({
-        success: true,
-        message: "Order Placed",
-        order
-    })
 })
+
+//@desc get all orders
+//@route GET /api/v1/orders
+//@access private
+export const getallOrdersCtrl = asyncHandler(async (req, res) => {
+    const orders = await Order.find();
+    res.json(
+        {
+            success: true,
+            message: "Orders fetched successfully",
+            orders
+        });
+})
+
+
+//@desc get single order
+//@route GET /api/v1/orders/:id
+//@access private/admin
+export const getSingleOrderCtrl = asyncHandler(async (req, res) => {
+    //get the is form request
+    const { id } = req.params;
+    const order = await Order.findById(id);
+    res.json({ success: true, message: "Order fetched successfully", order })
+
+})
+
+//@desc update order to "Pending", "Shipped", "Delivered", "Cancelled", "Processing"
+//@route PUT /api/v1/orders/update/:id
+//@access private/admin
+export const updateOrderCtrl = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    const order = await Order.findByIdAndUpdate(id, {
+        status: req.body.status
+    }, {
+        new: true,
+    });
+    res.json({ success: true, message: "Order updated successfully", order })
+})
+
+
+

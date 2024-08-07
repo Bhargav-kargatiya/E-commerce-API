@@ -63,15 +63,18 @@ export const loginUserCtrl = asyncHandler(async (req, res) => {
 // @route   POST /api/v1/users/prfile
 // @access  Private
 export const getUserProfileCtrl = asyncHandler(async (req, res) => {
-    //get token from header
-    const token = getTokenFromHeader(req)
-    //verify the token
-    const verified = verifyToken(token)
+    //find the user
+    const user = await User.findById(req.userAuthId).populate("orders")
+
+    if (!user) {
+        throw new Error("User not found");
+    }
     res.json({
         status: "success",
         message: "User profile fetched successfully",
-        data: req.user
+        data: user
     })
+
 })
 // @desc    Update user shipping address
 // @route   PUT /api/v1/users/update/shipping
