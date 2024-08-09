@@ -8,7 +8,7 @@ import isAdmin from "../middlewares/isAdmin.js";
 const productRoutes = express.Router();
 isLoggedin
 productRoutes.post('/', isLoggedin, isAdmin, upload.array('files'), createProductCtrl);
-productRoutes.get('/', isLoggedin, getProductsCtrl);
+productRoutes.get('/', getProductsCtrl);
 productRoutes.get('/:id', getSingleProductCtrl);
 productRoutes.put('/:id', isLoggedin, isAdmin, updateProductCtrl);
 productRoutes.delete('/:id/delete', isLoggedin, isAdmin, deleteProductCtrl);
