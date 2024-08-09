@@ -1,11 +1,12 @@
 import express from "express";
 import { createProductCtrl, deleteProductCtrl, getProductsCtrl, getSingleProductCtrl, updateProductCtrl } from "../controllers/productCtrl.js";
 import { isLoggedin } from "../middlewares/isLoggedin.js";
+import upload from "../config/fileUpload.js";
 
 
 const productRoutes = express.Router();
 isLoggedin
-productRoutes.post('/', isLoggedin, createProductCtrl);
+productRoutes.post('/', isLoggedin, upload.array('files'), createProductCtrl);
 productRoutes.get('/', getProductsCtrl);
 productRoutes.get('/:id', getSingleProductCtrl);
 productRoutes.put('/:id', isLoggedin, updateProductCtrl);

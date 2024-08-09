@@ -8,6 +8,12 @@ import Brand from '../model/Brand.js';
 //@access private/admin
 
 export const createProductCtrl = asynchandler(async (req, res) => {
+
+
+    const files = req.files
+    const convertedImgs = files.map((file) => file?.path);
+
+
     const { name, description, category, sizes, colors
         , user, price, totalQty, brand
     } = req.body;
@@ -41,7 +47,8 @@ export const createProductCtrl = asynchandler(async (req, res) => {
         user: req.userAuthId,
         price,
         totalQty,
-        brand: lowerCaseBrand
+        brand: lowerCaseBrand,
+        images: convertedImgs
 
     });
     //push the product into category
@@ -179,8 +186,8 @@ export const updateProductCtrl = asynchandler(async (req, res) => {
         , user, price, totalQty, brand
     } = req.body;
     //update Product
-    const lowerCaseName = name.toLowerCase();
-    const lowerCaseCategory = category.toLowerCase();
+    const lowerCaseName = name?.toLowerCase();
+    const lowerCaseCategory = category?.toLowerCase();
     const product = await Product.findByIdAndUpdate(req.params.id, {
         lowerCaseName,
         description,
