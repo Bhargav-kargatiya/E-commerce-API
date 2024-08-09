@@ -5,6 +5,8 @@ import asyncHandler from "express-async-handler";
 // @access  Private.admin
 
 export const createCategoryCtrl = asyncHandler(async (req, res) => {
+
+
     const { name } = req.body;
     const lowerCaseName = name.toLowerCase();
     const categoryFound = await Category.findOne({ name: lowerCaseName });
@@ -14,7 +16,8 @@ export const createCategoryCtrl = asyncHandler(async (req, res) => {
     //Create category
     const category = await Category.create({
         name: name.toLowerCase(),
-        user: req.userAuthId
+        user: req.userAuthId,
+        image: req?.file?.path
     })
 
     //send response
