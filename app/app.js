@@ -1,6 +1,7 @@
 import express from "express";
 import dbConnect from "../config/dbConnect.js";
 import dotenv from 'dotenv';
+import path from "path";
 import userRoutes from "../routes/usersRoute.js";
 import stripe from "stripe";
 import categoriesRouter from "../routes/categoriesRouter.js";
@@ -95,11 +96,19 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
     response.send();
 });
 
-// app.listen(4242, () => console.log('Running on port 4242'));
 
 //pass incoming data
 app.use(express.json())
+
+//server static files
+app.use(express.static("public"))
+
 //routes
+//homw route
+app.get('/', (req, res) => {
+    res.sendFile(path.join("public", '../public/index.html'))
+})
+
 app.use('/api/v1/users', userRoutes)
 app.use('/api/v1/product', productRoutes)
 app.use('/api/v1/categories', categoriesRouter)
