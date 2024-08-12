@@ -34,24 +34,24 @@ To run this project locally, follow these steps:
    ```
 3. **Environment Variables:**
 Create a `.env` file in the root of the backend and frontend directories and add the following variables:
-  ```bash
-MONGODB_URI=your_mongodb_connection_string
-JWT_SECRET=your_jwt_secret
-CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-STRIPE_SECRET_KEY=your_stripe_secret_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-```  
+     ```bash
+     MONGODB_URI=your_mongodb_connection_string
+     JWT_SECRET=your_jwt_secret
+     CLOUDINARY_CLOUD_NAME=your_cloudinary_cloud_name
+     CLOUDINARY_API_KEY=your_cloudinary_api_key
+     CLOUDINARY_API_SECRET=your_cloudinary_api_secret
+     STRIPE_SECRET_KEY=your_stripe_secret_key
+     STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+      ```  
 4. **Start the server:**
    ```bash
    npm run server  
    ```
 5. **Stripe Webhook Configuration:**
 If you are running the API locally and want to test Stripe webhook events, you need to listen to Stripe's webhooks using the following command.This will forward Stripe events to your local server.
- ```bash
-  stripe listen --forward-to localhost:<PORT>/webhook 
-   ```
+    ```bash
+        stripe listen --forward-to localhost:<PORT>/webhook 
+      ```
       
 ## API Documentation
 
