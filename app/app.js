@@ -13,8 +13,18 @@ import reviewsRoutes from "../routes/reviewRoute.js";
 import orderRoutes from "../routes/orderRoute.js";
 import Order from "../model/Order.js";
 import couponRoutes from "../routes/couponRoute.js";
-dotenv.config();
+import { Redis } from "ioredis";
+import { rateLimiter } from "../middlewares/Ratelimiter.js";
 
+// Use environment variables for Redis connection
+const redisHost = process.env.REDIS_HOST || 'localhost';
+const redisPort = process.env.REDIS_PORT || 6379;
+
+export const Client = new Redis({
+    host: redisHost,
+    port: redisPort,
+});
+dotenv.config();
 //db connect
 dbConnect();
 const app = express();
@@ -80,14 +90,14 @@ app.get('/', (req, res) => {
     res.sendFile(path.join("public", '../public/index.html'))
 })
 
-app.use('/api/v1/users', userRoutes)
-app.use('/api/v1/product', productRoutes)
-app.use('/api/v1/categories', categoriesRouter)
-app.use('/api/v1/brands', brandsRoutes)
-app.use('/api/v1/colors', colorsRoutes)
-app.use('/api/v1/reviews', reviewsRoutes)
-app.use('/api/v1/orders', orderRoutes)
-app.use('/api/v1/coupons', couponRoutes)
+app.use('/api/v1/users', rateLimiter, userRoutes)
+app.use('/api/v1/product', rateLimiter, productRoutes)
+app.use('/api/v1/categories', rateLimiter, categoriesRouter)
+app.use('/api/v1/brands', rateLimiter, brandsRoutes)
+app.use('/api/v1/colors', rateLimiter, colorsRoutes)
+app.use('/api/v1/reviews', rateLimiter, reviewsRoutes)
+app.use('/api/v1/orders', rateLimiter, orderRoutes)
+app.use('/api/v1/coupons', rateLimiter, couponRoutes)
 
 //global error handler
 app.use(notFound)
