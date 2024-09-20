@@ -18,7 +18,7 @@ const ReviewSchema = new Schema(
       type: String,
       required: [true, "Please add a message"],
     },
-    rating: {
+    rating: { 
       type: Number,
       required: [true, "Please add a rating between 1 and 5"],
       min: 1,

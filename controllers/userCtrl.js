@@ -4,7 +4,8 @@ import asyncHandler from "express-async-handler";
 import generateToke from "../utils/generateToken.js";
 import { getTokenFromHeader } from "../utils/getTokenFromHeader.js";
 import { verifyToken } from "../utils/verifyToken.js";
-
+import sendEmail from "../utils/sendEmail.js";
+import jwt from "jsonwebtoken"
 // @desc    Regester user
 // @route   POST /api/v1/users/register
 // @access  Private/Admin
@@ -98,6 +99,82 @@ export const updateUserShippingAddress = asyncHandler(async (req, res) => {
     })
 });
 
+// @desc    Forgot Password
+// @route   POST /api/v1/users/forgot-password
+// @access  Public
+export const forgotPasswordCtrl = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new Error("User not found with this email");
+    }
+
+    // Create a JWT token for password reset
+    const resetToken = jwt.sign(
+        { userId: user._id },
+        process.env.JWT_SECRET, // You can use a separate secret for password reset if needed
+        { expiresIn: '10m' } // Token will expire in 10 minutes
+    );
+
+    // Generate reset URL with the JWT token
+    const resetURL = `${req.protocol}://${req.get('host')}/api/v1/users/reset-password/${resetToken}`;
+    const message = `Forgot your password? Click this link to reset it: ${resetURL}`;
+
+    try {
+        // Send the email
+        await sendEmail({
+            email: user.email,
+            subject: 'Your Password Reset Token (valid for 10 minutes)',
+            message
+        });
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Token sent to email!'
+        });
+    } catch (err) {
+        throw new Error("There was an error sending the email. Try again later.");
+    }
+});
+
+
+// @desc    Reset Password
+// @route   PUT /api/v1/users/reset-password/:token
+// @access  Public
+export const resetPasswordCtrl = asyncHandler(async (req, res) => {
+    const { token } = req.params;
+
+    try {
+        // Verify the token
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+
+        // Find the user by the decoded ID
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+            throw new Error("User not found");
+        }
+
+        // Set the new password
+        const salt = await bcrypt.genSalt(10);
+        user.password = await bcrypt.hash(req.body.password, salt);
+
+        // Save the updated user
+        await user.save();
+
+        // Send response
+        res.status(200).json({
+            status: 'success',
+            message: 'Password reset successful!',
+            token: generateToke(user._id), // Log the user in after resetting password
+        });
+    } catch (err) {
+        // Handle invalid or expired token
+        throw new Error("Token is invalid or has expired");
+    }
+});
 
 
 

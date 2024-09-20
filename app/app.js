@@ -19,23 +19,7 @@ dotenv.config();
 dbConnect();
 const app = express();
 
-// server.js
-//
-// Use this sample code to handle webhook events in your integration.
-//
-// 1) Paste this code into a new file (server.js)
-//
-// 2) Install dependencies
-//   npm install stripe
-//   npm install express
-//
-// 3) Run the server on http://localhost:4242
-//   node server.js
-
-// The library needs to be configured with your account's secret key.
-// Ensure the key is kept out of any version control system you might be using.
-// This is your Stripe CLI webhook secret for testing your endpoint locally.
-const endpointSecret = "whsec_09ce2abe04a3b8c836985565279501e0066e8c427d33036085149b62e19b56bc";
+const endpointSecret = process.env.STRIPE_WEBHOOK_SECRET;
 
 app.post('/webhook', express.raw({ type: 'application/json' }), async (request, response) => {
     const sig = request.headers['stripe-signature'];
@@ -80,19 +64,6 @@ app.post('/webhook', express.raw({ type: 'application/json' }), async (request, 
     } else {
         return
     }
-
-    // // Handle the event
-    // switch (event.type) {
-    //     case 'payment_intent.succeeded':
-    //         const paymentIntentSucceeded = event.data.object;
-    //         // Then define and call a function to handle the event payment_intent.succeeded
-    //         break;
-    //     // ... handle other event types
-    //     default:
-    //         console.log(`Unhandled event type ${event.type}`);
-    // }
-
-    // Return a 200 response to acknowledge receipt of the event
     response.send();
 });
 
